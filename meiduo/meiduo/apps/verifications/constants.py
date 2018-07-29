@@ -1,0 +1,7 @@
+
+#图片验证码在Reid有效时间10分钟
+IMAGE_CODE_REDIS_EXPIRES = 60*10
+#短信验证码在redis有效时间
+SMS_CODE_REDIS_EXPIRES = 60*10
+#短信发送标志
+SEND_SMS_CODE_INTERVAL = 60
