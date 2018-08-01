@@ -10,7 +10,7 @@ app = Celery("meiduo")
 #加载配置
 app.config_from_object("celery_task.config")
 
-app.autodiscover_tasks(["celery_task.sms"]) #会自动查找ｔａｓｋｓ模块
+app.autodiscover_tasks(["celery_task.sms","celery_task.email","celery_task.html"]) #会自动查找ｔａｓｋｓ模块
 
 #启动celery
 #celery -A 主程序的包路径　workon -l info

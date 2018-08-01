@@ -46,8 +46,12 @@ INSTALLED_APPS = [
     'rest_framework',           #注册rest_framework
     'users.apps.UsersConfig',   #注册users模块
     'corsheaders',              #解决跨域问题
-
-
+    'areas.apps.AreasConfig',   #　注册areas
+    'ckeditor',                 #父文本编辑器ckeditor
+    'ckeditor_uploader',        # 富文本编辑器上传图片模块
+    'contents.apps.ContentsConfig', #　注册contents
+    'goods.apps.GoodsConfig',
+    'django_crontab',           # 定时任务'
 ]
 
 MIDDLEWARE = [
@@ -67,7 +71,7 @@ ROOT_URLCONF = 'meiduo.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [os.path.join(BASE_DIR, 'templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -118,6 +122,14 @@ CACHES = {
     "verify_codes": {
             "BACKEND": "django_redis.cache.RedisCache",
             "LOCATION": "redis://127.0.0.1:6379/2",
+            "OPTIONS": {
+                "CLIENT_CLASS": "django_redis.client.DefaultClient",
+            }
+        },
+   #用户浏览历史记录
+    "history": {
+            "BACKEND": "django_redis.cache.RedisCache",
+            "LOCATION": "redis://127.0.0.1:6379/3",
             "OPTIONS": {
                 "CLIENT_CLASS": "django_redis.client.DefaultClient",
             }
@@ -241,4 +253,56 @@ AUTHENTICATION_BACKENDS = [
     'users.utils.UsernameMobileAuthBackend',
 ]
 
+#　163邮箱配置
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.163.com'
+EMAIL_PORT = 25
+#发送邮件的邮箱
+EMAIL_HOST_USER = '18702529877@163.com'
+#在邮箱中设置的客户端授权密码
+EMAIL_HOST_PASSWORD = 'laipeng03141387'
+#收件人看到的发件人
+EMAIL_FROM = 'python<itcast88@163.com>'
 
+
+# 缓存拓展，DRF扩展
+REST_FRAMEWORK_EXTENSIONS = {
+    # 缓存时间　DEFAULT_CACHE_RESPONSE_TIMEOUT 缓存有效期，单位秒
+    'DEFAULT_CACHE_RESPONSE_TIMEOUT': 60 * 60,
+    # 缓存存储　DEFAULT_USE_CACHE 缓存的存储方式，与配置文件中的CACHES的键对应。
+    'DEFAULT_USE_CACHE': 'default',
+}
+
+# django文件存储
+DEFAULT_FILE_STORAGE = 'meiduo.utils.fastdfs.fdfs_storage.FastDFSStorage'
+
+# FastDFS
+FDFS_URL = 'http://192.168.32.148:8888/'  # storage里面自带ngix服务器提供port:8888
+FDFS_CLIENT_CONF = os.path.join(BASE_DIR, 'utils/fastdfs/client.conf')  #　fastdfs配置文件
+
+
+# 富文本编辑器ckeditor配置
+CKEDITOR_CONFIGS = {
+    'default': {
+        'toolbar': 'full',  # 工具条功能
+        'height': 300,  # 编辑器高度
+        # 'width': 300,  # 编辑器宽
+    },
+}
+CKEDITOR_UPLOAD_PATH = ''  # 上传图片保存路径，因为使用了FastDFS，所以此处设为''
+
+# 生成的静态html文件保存目录
+GENERATED_STATIC_HTML_FILES_DIR  = os.path.join(os.path.dirname(os.path.dirname(BASE_DIR)),"front_end_pc")
+
+# 解决crontab中文问题
+CRONTAB_COMMAND_PREFIX = 'LANG_ALL=zh_cn.UTF-8'
+
+
+# 定时任务列表一个元祖代表一个任务，一个元祖中包含三个参数
+# 参数1：函数执行间隔时间男
+# 参数2：执行的任务函数
+# 参数3：函数执行输出的内容
+CRONJOBS = [
+    # 每5分钟执行一次生成主页静态文件
+    ('*/1 * * * *', 'contents.crons.generate_static_index_html', '>> /home/python/Desktop/meiduo/meiduo/logs/crontab.log')
+]

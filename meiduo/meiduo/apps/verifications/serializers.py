@@ -32,7 +32,7 @@ class ImageCodeCheckSerializer(serializers.Serializer):
             raise serializers.ValidationError("验证码错误")
 
         #验证redis中发送短信标志是否存在
-        mobile = self.context['view'].kwargs["mobile"]
+        mobile = self.context['view'].kwargs.get("mobile") # .get() 不存在不报错
         #为了序列化器复用，用于注册以及找回密码第一步
         if mobile:
             send_flg= redis_conn.get("send_flag_%s" %mobile)

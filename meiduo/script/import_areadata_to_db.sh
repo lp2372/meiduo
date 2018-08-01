@@ -1,0 +1,1 @@
+mysql -h127.0.0.1 -umeiduo_db -p meiduo < areas.sql
